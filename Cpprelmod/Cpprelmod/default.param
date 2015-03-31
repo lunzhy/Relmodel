@@ -1,4 +1,50 @@
-# This is the default parameters file for running SimCTM
+# This is the default parameters file for running Cpprelmod
+# CAUTION! All the parameters and keywords are case-sensitive
+# CAUTION! Currently, previous parameters for SimCTM are moved here if they are still used in Cpprelmod
+
+
+###################### paramters for simulation #################################
+temperature					: 300					# simulation temperature, in [K]
+subs.type					: P 					# N | P , substrate type
+subs.doping					: 1e17					# in [cm^-3]
+
+################### parameters for gate stack structure #########################
+# gate
+st.gate.voltage				: 0						# in [V]
+st.gate.workfunction		: 4.7					# in [eV]
+
+# the width of the structure
+st.width.value				: 10					# in [nm] 
+st.width.grid				: 5						# number of grids in width
+
+# property of interface layer
+st.il.thick					: 4						# in [nm]
+st.il.grid					: 50					# number of grids of interface layer
+sc.il.material				: SiO2					# interface layer material
+
+# property of oxide layer
+st.oxide.thick				: 6.5					# in [nm]
+st.oxide.grid				: 100					# number of grids of oxide layer
+st.oxide.material			: Si3N4					# oxide layer material
+
+
+########################### material parameters ################################
+# SiO2
+material					: SiO2
+bandgap						: 9.4					# in [eV]
+dielectricConstant			: 3.9
+electronAffinity			: 0.9					# in [eV]
+
+# HfO2
+material					: HfO2
+bandgap						: 5.9					# in [eV]
+dielectricConstant			: 20.0
+electronAffinity			: 2.05					# in [eV]
+
+
+
+#################################################################################
+# Below are the default parameters file for running SimCTM
 # CAUTION! parameters for hole in all materials are not included.
 # CAUTION! All the parameters and keywords are case-sensitive
 
@@ -11,7 +57,7 @@ coordinate					: Cartesian				# Cylindrical | Cartesian, the coordinate system i
 solver						: SparseLU				# SparseLU | BiCGSTAB | Pardiso, the solver for linear matrix solver
 
 # global control of the simulation
-temperature					: 300					# simulation temperature, in [K]
+# temperature					: 300					# simulation temperature, in [K]
 time.stepMode				: Internal				# Internal | UserDefined, time step generation mode
 time.stepScale				: Exp10					# Exp10 | Linear, time step scale inside a decade
 time.start					: 1e-15					# in [s]
@@ -22,8 +68,8 @@ step.write.data				: 0						# interval steps for writing data
 
 # substrate, traps information
 subs.radius					: 0						# in [nm], the radius of the channel
-subs.type					: P 					# N | P , substrate type
-subs.doping					: 1e17					# in [cm^-3]
+# subs.type					: P 					# N | P , substrate type
+# subs.doping					: 1e17					# in [cm^-3]
 trap.eDensity				: 6e19					# in [cm^-3]
 trap.hDensity				: 6e19					# in [cm^-3]
 trap.density				: 6e19					# in [cm^-3], trap density for amphoretic trap
@@ -145,9 +191,9 @@ hMobility					: 450					# in [cm^2/V/s]
 
 # SiO2
 material					: SiO2
-bandgap						: 9.4					# in [eV]
-dielectricConstant			: 3.9
-electronAffinity			: 0.9					# in [eV]
+# bandgap						: 9.4					# in [eV]
+# dielectricConstant			: 3.9
+# electronAffinity			: 0.9					# in [eV]
 eMass						: 0.42					# in [m0]
 hMass						: 0.42					# in [m0]
 
@@ -184,10 +230,10 @@ hFrequencyPF				: 1e9					# in [1/s]
 
 # HfO2
 material					: HfO2
-bandgap						: 5.9					# in [eV]
-dielectricConstant			: 20.0
+# bandgap						: 5.9					# in [eV]
+# dielectricConstant			: 20.0
 highFrequencyDielConst		: 4.0					# not-known
-electronAffinity			: 2.05					# in [eV]
+# electronAffinity			: 2.05					# in [eV]
 eDOSMass					: 0.2					# in [m0]
 eMass						: 0.2					# in [m0]
 eMobility					: 0.01					# in [cm^2/V/s]

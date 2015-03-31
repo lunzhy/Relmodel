@@ -431,6 +431,18 @@ namespace SctmUtils
 	public:
 		enum ParName
 		{
+			// for gate stack structure
+			st_gate_voltage,
+			st_gate_workfunction,
+			st_width_value,
+			st_width_grid,
+			st_il_thick,
+			st_il_grid,
+			st_il_material,
+			st_oxide_thick,
+			st_oxide_grid,
+			st_oxide_material,
+
 			structure,
 			coordinate,
 			solver,
