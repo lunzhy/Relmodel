@@ -1,0 +1,206 @@
+# This is the default parameters file for running SimCTM
+# CAUTION! parameters for hole in all materials are not included.
+# CAUTION! All the parameters and keywords are case-sensitive
+
+# The material set contains Silicon, SiO2, Si3N4, Al2O3, HfO2
+
+###################### paramters for simulation #################################
+# parameters for the solver
+structure					: Single				# Single | TripleFull, cell structure
+coordinate					: Cartesian				# Cylindrical | Cartesian, the coordinate system in the simulation
+solver						: SparseLU				# SparseLU | BiCGSTAB | Pardiso, the solver for linear matrix solver
+
+# global control of the simulation
+temperature					: 300					# simulation temperature, in [K]
+time.stepMode				: Internal				# Internal | UserDefined, time step generation mode
+time.stepScale				: Exp10					# Exp10 | Linear, time step scale inside a decade
+time.start					: 1e-15					# in [s]
+time.end					: 1						# in [s]
+time.stepPerDecade			: 10					# steps per decade in log scale
+time.stepMax				: 0						# in [s], the maximal time step
+step.write.data				: 0						# interval steps for writing data
+
+# substrate, traps information
+subs.radius					: 0						# in [nm], the radius of the channel
+subs.type					: P 					# N | P , substrate type
+subs.doping					: 1e17					# in [cm^-3]
+trap.eDensity				: 6e19					# in [cm^-3]
+trap.hDensity				: 6e19					# in [cm^-3]
+trap.density				: 6e19					# in [cm^-3], trap density for amphoretic trap
+trap.distribution			: Uniform				# Uniform | 2D, trap distribution information
+
+# switches of the physical mechanisms
+carriers					: Both					# Electron | Both
+trap.capture				: J-Model				# J-Model | V-Model
+physics.mfn					: True					# True | False (not true, false)
+physics.b2t					: False					# True | False, Band-to-Trap tunneling in
+physics.t2b					: False					# True | False, Trap-to-Band tunneling out
+physics.pf					: None					# None | EtDecrease | Frequency, model of Poole-Frenkel effect
+
+# for debug
+debug.trap.occupy			: 0						# range [-1, 1], trap occupation state, positive value for hole occupation, negative electron
+debug.trap.cell				: Center				# Center | Side | All, occupied cells
+debug.lateral.tunnel		: True					# True | False, the non-orthogonal tunneling near the gate
+debug.call.pytaurus			: Initial				# Never | Initial | EveryStep | Major, the frequency of calling Pytaurus in Linux
+debug.update.substrate		: False					# True | False, solve and update substrate potential, especially when calling Pytaurus
+debug.clear.carrier			: True					# True | False, clear free carriers when changing gate voltage
+debug.read.trapped			: False					# True | False, read trapped electron/hole distribution at the start of the simulation
+
+# TODO: the simulation of retention after programming has not been implemented yet.
+debug.rAfterP				: False					# True | False, rentention after program
+debug.rEndTime				: 1e6					# retention end time after program
+
+################### parameters for single cell (sc) structure #################
+# gate
+sc.gate.voltage				: 18					# in [V]
+sc.gate.workfunction		: 4.7					# in [eV]
+
+# the width of the structure
+sc.width.value				: 10					# in [nm] 
+sc.width.grid				: 5						# number of grids in width
+
+# property of tunneling oxide
+sc.tunnel.thick				: 4						# in [nm]
+sc.tunnel.grid				: 50					# number of grids of tunneling oxide
+sc.tunnel.material			: SiO2					# a material in material set
+
+# property of trapping layer
+sc.trap.thick				: 6.5					# in [nm]
+sc.trap.grid				: 100					# number of grids of trapping layer
+sc.trap.material			: Si3N4					# a material in the material set
+
+# property of blocking oxide
+sc.block.thick				: 15					# in [nm]
+sc.block.grid				: 50					# number of grids of blocking oxide
+sc.block.material			: Al2O3					# a material in the material set
+
+################### paramters for triple cell (tc) structure #################
+# parameters for sentaurus solving
+tc.structure				: Planar				# DoubleGate | Planar, the structure in triple cells
+tc.junction					: False					# True | False, junction between adjacent cells
+tc.substrate.thick			: 100					# in [nm], substrate thickness of planar structure
+tc.drain.voltage			: 1.5					# the drain voltage in solving potential
+tc.drain.voltage.read		: 1.5					# the drain voltage for read vth
+tc.gate.voltage.pass		: 5						# the gate pass voltage for read vth
+tc.gate.voltage.read		: 16					# the gate voltage for read vth
+
+# gate 1
+tc.gate1.voltage			: 10					# in [V]
+tc.gate1.workfunction		: 4.7					# in [eV]
+tc.gate1.width				: 30					# in [nm]
+tc.gate1.width.grid 		: 10 					# number of grids along width direction
+
+# gate 2
+tc.gate2.voltage			: 16					# in [V]
+tc.gate2.workfunction		: 4.7					# in [eV]
+tc.gate2.width				: 30					# in [nm]
+tc.gate2.width.grid 		: 10 					# number of grids along width direction
+
+# gate 3
+tc.gate3.voltage			: 10					# in [V]
+tc.gate3.workfunction		: 4.7					# in [eV]
+tc.gate3.width				: 30					# in [nm]
+tc.gate3.width.grid			: 10					# number of grids along width direction
+
+# isolations
+tc.iso.material				: Si3N4					# a meterial in material set
+tc.iso.thick				: 10					# in [nm]
+tc.iso.thick.grid			: 5 					# number of grids along thick direction
+tc.iso1.width				: 10					# in [nm], width of isolation no.1
+tc.iso1.width.grid			: 5						# number of grids along width direction of isolation no.1
+tc.iso2.width				: 20					# in [nm], width of isolation no.2
+tc.iso2.width.grid			: 20					# number of grids along width direction of isolation no.2
+tc.iso3.width				: 20					# in [nm], width of isolation no.3
+tc.iso3.width.grid			: 20					# number of grids along widht direction of isolation no.3
+tc.iso4.width				: 10					# in [nm], width of isolation no.4
+tc.iso4.width.grid			: 5					# number of grids along widht direction of isolation no.4
+
+# property of tunneling oxide
+tc.tunnel.thick				: 4						# in [nm]
+tc.tunnel.thick.grid		: 50					# number of grids along thick direction of tunneling oxide
+tc.tunnel.material			: SiO2					# a material in material set
+
+# property of trapping layer
+tc.trap.thick				: 6.5					# in [nm]
+tc.trap.thick.grid			: 100					# number of grids along thick direction of trapping layer
+tc.trap.material			: Si3N4					# a material in the material set
+
+# property of blocking oxide
+tc.block.thick				: 15					# in [nm]
+tc.block.thick.grid			: 50					# number of grids along thick direction of blocking layer
+tc.block.material			: Al2O3					# a material in the material set
+
+##################### material parameters ###############################
+# Silicon
+material					: Silicon
+bandgap						: 1.12					# in [eV]
+dielectricConstant			: 11.9
+electronAffinity			: 4.05					# in [eV]
+eMass						: 1.08					# in [m0]
+eDOSMass					: 1.08					# in [m0]
+eMobility					: 1350					# in [cm^2/V/s]
+hMass						: 0.59					# in [m0]
+hDOSMass					: 0.59					# in [m0]
+hMobility					: 450					# in [cm^2/V/s]
+
+# SiO2
+material					: SiO2
+bandgap						: 9.4					# in [eV]
+dielectricConstant			: 3.9
+electronAffinity			: 0.9					# in [eV]
+eMass						: 0.42					# in [m0]
+hMass						: 0.42					# in [m0]
+
+# Al2O3
+material					: Al2O3
+bandgap						: 8.8					# in [eV]
+dielectricConstant			: 9.0
+electronAffinity			: 1.25					# in [eV]
+eMass						: 0.2					# in [m0]
+hMass						: 0.2					# in [m0]
+
+# Si3N4
+material					: Si3N4
+bandgap						: 5.0					# in [eV]
+dielectricConstant			: 7.5
+highFrequencyDielConst		: 4.0					# high-frequency/dynamic relative dielectric constant
+electronAffinity			: 1.9					# in [eV]
+eDOSMass					: 0.42					# in [m0]
+eMass						: 0.42					# in [m0]
+eMobility					: 0.1					# in [cm^2/V/s]
+eTrapEnergy					: 1.2					# in [eV]
+eXsection					: 1e-14					# in [cm^2]
+eTrapXsection				: 1e-15					# in [cm^2]
+eFrequencyT2B				: 5e7					# in [1/s]
+eFrequencyPF				: 1e9					# in [1/s]
+hDOSMass					: 0.5					# in [m0]
+hMass						: 0.5					# in [m0]
+hMobility					: 0.2					# in [cm^2/V/s]
+hXsection					: 1e-14					# in [cm^2]
+hTrapXsection				: 1e-15					# in [cm^2]
+hTrapEnergy					: 1.8					# in [eV]
+hFrequencyT2B				: 5e7					# in [1/s]
+hFrequencyPF				: 1e9					# in [1/s]
+
+# HfO2
+material					: HfO2
+bandgap						: 5.9					# in [eV]
+dielectricConstant			: 20.0
+highFrequencyDielConst		: 4.0					# not-known
+electronAffinity			: 2.05					# in [eV]
+eDOSMass					: 0.2					# in [m0]
+eMass						: 0.2					# in [m0]
+eMobility					: 0.01					# in [cm^2/V/s]
+eTrapEnergy					: 0.7					# in [eV]
+eXsection					: 1e-14					# in [cm^2]
+eTrapXsection				: 1e-15					# in [cm^2]
+eFrequencyT2B				: 5e7					# in [1/s], not by reference
+eFrequencyPF				: 1e9					# in [1/s], not by reference
+hDOSMass					: 0.5					# in [m0]
+hMass						: 0.5					# in [m0]
+hMobility					: 0.2					# in [cm^2/V/s]
+hXsection					: 1e-14					# in [cm^2]
+hTrapXsection				: 1e-15					# in [cm^2]
+hTrapEnergy					: 1.8					# in [eV]
+hFrequencyT2B				: 5e7					# in [1/s]
+hFrequencyPF				: 1e9					# in [1/s]
