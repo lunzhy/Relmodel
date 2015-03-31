@@ -32,6 +32,33 @@ namespace SctmUtils
 typedef std::map<int, int> VertexMapInt; // <vertID, int>
 typedef std::map<int, double> VertexMapDouble; // <vertID, double>
 
+class GateStackSolverPack
+{
+	friend class SctmUtils::SctmData;
+public:
+	GateStackSolverPack(FDDomain *_domain);
+	void Solve();
+
+protected:
+	double temperature;
+	string simStructure;
+	FDDomain *domain;
+
+	OneDimSubsSolver *subsSolver;
+	TwoDimPoissonSolver *poissonSolver;
+
+protected:
+	void initialize();
+
+	void fetchSubstrateResult();
+	void fetchPoissonResult();
+
+private:
+	VertexMapDouble mapChannelPotential; ///< the potential of channel vertices
+	VertexMapDouble mapSiFermiAboveCBedge; ///< for input in the tunneling solver silicon fermi energy - silicon conduction band edge
+	VertexMapDouble mapPotential; ///< map for potential
+};
+
 class SolverPack
 {
 	friend class SctmUtils::SctmData;

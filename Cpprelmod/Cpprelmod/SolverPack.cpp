@@ -94,7 +94,7 @@ void SolverPack::callIteration()
 			//solve substrate, no matter under Windows or Linux environment
 			subsSolver->SolveSurfacePot();
 			fetchSubstrateResult();
-			SctmData::Get().WriteSubstrateResult(subsSolver, this, true);
+			//SctmData::Get().WriteSubstrateResult(subsSolver, this, true);
 		}
 		else if (simStructure == "TripleFull")
 		{
@@ -112,7 +112,7 @@ void SolverPack::callIteration()
 			{
 				subsSolver->SolveSurfacePot();
 				fetchSubstrateResult();
-				SctmData::Get().WriteSubstrateResult(subsSolver, this);
+				//SctmData::Get().WriteSubstrateResult(subsSolver, this);
 			}
 			else
 			{
@@ -391,4 +391,50 @@ void SolverPack::fetchSubstrateResult()
 void SolverPack::readSubstrateFromFile()
 {
 	SctmData::Get().ReadSubsInfoFromFile(mapSiFermiAboveCBedge, mapChannelPotential);
+}
+
+void GateStackSolverPack::initialize()
+{
+	subsSolver = new OneDimSubsSolver(domain);
+	poissonSolver = new TwoDimPoissonSolver(domain);
+}
+
+void GateStackSolverPack::fetchSubstrateResult()
+{
+	subsSolver->ReturnResult(mapSiFermiAboveCBedge, mapChannelPotential);
+}
+
+void GateStackSolverPack::fetchPoissonResult()
+{
+	poissonSolver->UpdatePotential();
+}
+
+void GateStackSolverPack::Solve()
+{
+
+	SctmMessaging::Get().PrintHeader("Start to solve");
+	SctmTimer::Get().Set();
+
+	//read trapped occupation of domain
+
+	//domain->RefreshGateVoltage();
+	//refresh gate potential
+
+
+	subsSolver->SolveSurfacePot();
+	fetchSubstrateResult();
+	SctmData::Get().WriteSubstrateResult(subsSolver, this, true);
+
+	poissonSolver->ReadChannelPotential(mapChannelPotential);
+	poissonSolver->SolvePotential();
+	fetchPoissonResult();
+	SctmData::Get().WritePotential(domain->GetVertices());
+	SctmData::Get().WriteBandInfo(domain->GetVertices());
+	SctmData::Get().WriteElecField(domain->GetVertices());
+}
+
+GateStackSolverPack::GateStackSolverPack(FDDomain *_domain)
+{
+	this->temperature = SctmGlobalControl::Get().Temperature;
+	initialize();
 }

@@ -23,6 +23,7 @@
 #include <sstream>
 #include <algorithm>
 #include "SolverPack.h"
+#include "GateStack.h"
 
 using std::cout;
 using std::endl;
@@ -1617,7 +1618,7 @@ namespace SctmUtils
 		file.WriteLine(line);
 	}
 
-	void SctmData::WriteSubstrateResult(OneDimSubsSolver *subsSolver, SolverPack *solverPack, bool singlefile /* = false*/)
+	void SctmData::WriteSubstrateResult(OneDimSubsSolver *subsSolver, GateStackSolverPack *solverPack, bool singlefile /* = false*/)
 	{
 		Normalization norm = Normalization(this->temperature);
 		VertexMapDouble fermi_above_map;
