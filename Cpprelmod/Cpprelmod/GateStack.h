@@ -22,6 +22,8 @@ class GateStack : public FDDomain
 {
 public:
 	GateStack();
+	void ReadChargeOccupation();
+	void RefreshGatePotential();
 
 protected:
 	double gateVoltage;

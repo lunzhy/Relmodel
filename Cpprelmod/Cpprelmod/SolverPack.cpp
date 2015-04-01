@@ -393,6 +393,14 @@ void SolverPack::readSubstrateFromFile()
 	SctmData::Get().ReadSubsInfoFromFile(mapSiFermiAboveCBedge, mapChannelPotential);
 }
 
+
+GateStackSolverPack::GateStackSolverPack(FDDomain *_domain) : domain(_domain)
+{
+	this->temperature = SctmGlobalControl::Get().Temperature;
+	simStructure = SctmGlobalControl::Get().Structure;
+	initialize();
+}
+
 void GateStackSolverPack::initialize()
 {
 	subsSolver = new OneDimSubsSolver(domain);
@@ -411,30 +419,24 @@ void GateStackSolverPack::fetchPoissonResult()
 
 void GateStackSolverPack::Solve()
 {
-
 	SctmMessaging::Get().PrintHeader("Start to solve");
-	SctmTimer::Get().Set();
-
-	//read trapped occupation of domain
-
-	//domain->RefreshGateVoltage();
-	//refresh gate potential
-
+	domain->ReadChargeOccupation();
 
 	subsSolver->SolveSurfacePot();
 	fetchSubstrateResult();
-	SctmData::Get().WriteSubstrateResult(subsSolver, this, true);
+	SctmData::Get().WriteSubstrateResult(subsSolver, this);
 
+	domain->RefreshGatePotential();
 	poissonSolver->ReadChannelPotential(mapChannelPotential);
 	poissonSolver->SolvePotential();
 	fetchPoissonResult();
 	SctmData::Get().WritePotential(domain->GetVertices());
 	SctmData::Get().WriteBandInfo(domain->GetVertices());
 	SctmData::Get().WriteElecField(domain->GetVertices());
+	
+	SctmTimer::Get().Timeit("Total", SctmTimer::Get().PopLastSet());
+	SctmMessaging::Get().PrintHeader("Finished.");
+	SctmData::Get().WriteTimerInfo(SctmTimer::Get());
 }
 
-GateStackSolverPack::GateStackSolverPack(FDDomain *_domain)
-{
-	this->temperature = SctmGlobalControl::Get().Temperature;
-	initialize();
-}
+

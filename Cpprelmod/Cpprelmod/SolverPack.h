@@ -56,7 +56,6 @@ protected:
 private:
 	VertexMapDouble mapChannelPotential; ///< the potential of channel vertices
 	VertexMapDouble mapSiFermiAboveCBedge; ///< for input in the tunneling solver silicon fermi energy - silicon conduction band edge
-	VertexMapDouble mapPotential; ///< map for potential
 };
 
 class SolverPack

@@ -41,29 +41,29 @@ void GateStack::setParametersFromParamParser()
 	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_width_value);
 	widthValue = dynamic_cast<Param<double> *>(parBase)->Value();
 
+	//width grid
+	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_width_grid);
+	gridWidth = dynamic_cast<Param<int> *>(parBase)->Value();
+
 	//interface layer thickness
 	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_il_thick);
 	thickIl = dynamic_cast<Param<double> *>(parBase)->Value();
-
-	//oxide layer thick
-	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_oxide_thick);
-	thickOxide = dynamic_cast<Param<double> *>(parBase)->Value();
-
-	//width grid
-	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_width_grid);
-	gridThickIl = dynamic_cast<Param<int> *>(parBase)->Value();
 
 	//interface layer grid
 	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_il_grid);
 	gridThickIl = dynamic_cast<Param<int> *>(parBase)->Value();
 
-	//oxide layer grid
-	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_oxide_grid);
-	gridThickOxide = dynamic_cast<Param<int> *>(parBase)->Value();
-
 	//interface layer material name
 	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_il_material);
 	matNameStrIl = dynamic_cast<Param<string> *>(parBase)->Value();
+
+	//oxide layer thick
+	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_oxide_thick);
+	thickOxide = dynamic_cast<Param<double> *>(parBase)->Value();
+
+	//oxide layer grid
+	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_oxide_grid);
+	gridThickOxide = dynamic_cast<Param<int> *>(parBase)->Value();
 
 	//oxide layer material name
 	parBase = SctmParameterParser::Get().GetPar(SctmParameterParser::st_oxide_material);
@@ -153,9 +153,9 @@ void GateStack::setDomainDetails()
 	using MaterialDB::Mat;
 	Mat::Name currMatName;//ErrorMaterial
 	currMatName = Mat::Parse(matNameStrIl);
-	regions.push_back(new FDRegion(indexRegion++, "IL", GetMaterial(currMatName)));
+	regions.push_back(new FDRegion(indexRegion++, "Trap.IL", GetMaterial(currMatName)));
 	currMatName = Mat::Parse(matNameStrOxide);
-	regions.push_back(new FDRegion(indexRegion++, "Oxide", GetMaterial(currMatName)));
+	regions.push_back(new FDRegion(indexRegion++, "Trap.Oxide", GetMaterial(currMatName)));
 
 	/////set element of each region
 	FDRegion *currRegion = NULL;
@@ -165,13 +165,13 @@ void GateStack::setDomainDetails()
 	int iyEnd = 0;
 
 	//interface layer
-	currRegion = this->GetRegion("IL");
+	currRegion = this->GetRegion("Trap.IL");
 	ixBegin = 0; ixEnd = gridWidth;
 	iyBegin = 0; iyEnd = gridThickIl;
 	setSingleElement(indexElement, currRegion, ixBegin, ixEnd, iyBegin, iyEnd);
 	
 	//Oxide
-	currRegion = this->GetRegion("Block");
+	currRegion = this->GetRegion("Trap.Oxide");
 	ixBegin = 0; ixEnd = gridWidth;
 	iyBegin = gridThickIl; iyEnd = iyBegin + gridThickOxide;
 	setSingleElement(indexElement, currRegion, ixBegin, ixEnd, iyBegin, iyEnd);
@@ -344,4 +344,71 @@ void GateStack::setTrapDistribution()
 {
 
 }
+
+void GateStack::ReadChargeOccupation()
+{
+	FDVertex* vert = NULL;
+	double trapDens = 0;
+	double eTrappedDens = 0;
+
+	int eOcc = 0;
+	double controlArea = 0;
+	vector<int> eChargeOcc;
+
+	SctmData::Get().ReadChargeOcc(eChargeOcc);
+
+	for (size_t iVert = 0; iVert != this->ddVerts.size(); ++iVert)
+	{
+		vert = ddVerts.at(iVert);
+		controlArea = vert->Phys->GetPhysPrpty(PhysProperty::DensityControlArea);
+
+		//trapDens = vert->Trap->GetTrapPrpty(TrapProperty::TrapDensity);
+		
+		eOcc = eChargeOcc.at(iVert);
+
+		if (eOcc == 1)
+		{
+			eTrappedDens = 1.0 / controlArea;
+		}
+		else if (eOcc == 0)
+		{
+			eTrappedDens = 0;
+		}
+
+		vert->Trap->SetTrapPrpty(TrapProperty::eTrapped, eTrappedDens);
+	}
+}
+
+void GateStack::RefreshGatePotential()
+{
+	Normalization norm = Normalization(SctmGlobalControl::Get().Temperature);
+	static double workFunction_Si = SctmPhys::ReferencePotential;//already in normalized value
+
+	FDContact *contact = NULL;
+	FDVertex *vert = NULL;
+	vector<FDVertex *> contVerts;
+
+	string gateName = "Gate";
+	double gateWorkfunction = 0;
+	double gatePotential = 0;
+	double voltage = 0;
+
+
+	contact = this->GetContact(gateName);
+	voltage = contact->Voltage;
+
+	//refresh potential of gate vertex
+	contVerts = contact->GetContactVerts();
+	for (size_t iv = 0; iv != contVerts.size(); ++iv)
+	{
+		gateWorkfunction = contact->Workfunction;
+		gatePotential = voltage - (gateWorkfunction - workFunction_Si);
+		vert = contVerts.at(iv);
+		vert->BndCond.RefreshBndCond(FDBoundary::Potential, gatePotential);
+	}
+}
+
+
+
+
 

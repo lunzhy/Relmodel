@@ -57,6 +57,9 @@ public:
 	void BuildDomain();
 	void RefreshGateVoltage();
 	void ClearCarrier();
+
+	virtual void ReadChargeOccupation() {};
+	virtual void RefreshGatePotential() {};
 protected:
 	double temperature;
 	std::vector<FDVertex *> vertices; ///< the vertices contained in the domain

@@ -16,95 +16,35 @@
 
 using namespace SctmUtils;
 
-void initialize(const char *prjdir ="", const char *defaulParFile = "")
+void initialize(const char *defaulParFile, const char *prjdir, const char *chargeInput)
 {
 	//SctmMessaging::Get().PrintWelcomingInformation();
 
 	string prj(prjdir);
 	string defaultParam(defaulParFile);
-
-	if (prj.empty())
-	{
-		SctmMessaging::Get().PrintHeader("Cleaning debug folder.");
-		prj = SctmEnv::Get().DebugPrjPath;
-		SctmPyCaller::PyClean(prj);
-	}
-	else
-	{
-		if (SctmEnv::IsWindows())
-		{
-			//clean the project in Windows
-			SctmPyCaller::PyClean(prj);
-		}
-		if (SctmEnv::IsLinux())
-		{
-			SctmMessaging::Get().PrintHeader("Preparing project folder.");
-			SctmPyCaller::PyPrepare(prj);//currently the preparation of project folders only exists in Linux
-		}
-	}
-
-	if (defaultParam.empty())
-	{
-		defaultParam = SctmEnv::Get().DefaultParamPath;
-	}
-
-	SctmGlobalControl::SetGlobalControl(defaultParam, prj);
+	string chargeInputFile(chargeInput);
 
 	SctmMessaging::Get().PrintHeader("Initializing the simulator.");
-	SctmTimer::Get().Start();
-	
-	//the initialization of the simulation goes here
-	//MaterialDB::SetMaterials_Directly();
+	SctmGlobalControl::SetGlobalControl(defaultParam, prj, chargeInputFile);
 	MaterialDB::SetMaterial_FromParFile();
 	SctmPhys::SetPhysConstant();
 }
 
-void RunSolverPack()
-{
-	FDDomain *aDomain = NULL;
-	if (SctmGlobalControl::Get().Structure == "TripleFull")
-	{
-		SctmMessaging::Get().PrintHeader("Building full triple-cell domain.");
-		aDomain = new TripleCellsFull();
-	}
-	if (SctmGlobalControl::Get().Structure == "Single")
-	{
-		SctmMessaging::Get().PrintHeader("Building single-cell domain.");
-		aDomain = new SimpleONO();
-	}
-	aDomain->BuildDomain();
-	SolverPack aPack = SolverPack(aDomain);
-	aPack.Run();
-}
-
-
 void RunGateStack()
 {
 	FDDomain *aDomain = NULL;
+
+	SctmTimer::Get().Set();
 	SctmMessaging::Get().PrintHeader("Building gate stack.");
 	aDomain = new GateStack();
+	aDomain->BuildDomain();
 	GateStackSolverPack gateSolver = GateStackSolverPack(aDomain);
 	gateSolver.Solve();
 }
 
 int main(int argc, char* argv[])
 {
-	switch (argc)
-	{
-	case 1:
-		initialize();
-		break;
-	case 2:
-		initialize(argv[1]);
-		break;
-	case 3:
-		initialize(argv[1], argv[2]);
-		break;
-	default:
-		SctmMessaging::Get().PrintHeader("Argument Error");
-		exit(0);
-		break;
-	}
-	RunSolverPack();
+	initialize(argv[1], argv[2], argv[3]);
+	RunGateStack();
 	return 0;
 }

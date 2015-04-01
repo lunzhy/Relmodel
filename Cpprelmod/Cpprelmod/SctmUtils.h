@@ -271,6 +271,7 @@ namespace SctmUtils
 		void WriteVector(vector<double> &vec1, vector<double> &vec2, vector<double> &vec3, vector<string> vec4, const char *title = "title not assigned");
 		void WriteLine(string &line);
 
+		void ReadVector(vector<int> &vec1);
 		void ReadVector(vector<int> &vec1, vector<double> &vec2, vector<double> &vec3);
 		void ReadVector(vector<double> &vec1, vector<double> &vec2, vector<double> &vec3, vector<double> &vec4);
 		void ReadVector(vector<double> &vec1, vector<double> &vec2, vector<double> &vec3, vector<double> &vec4, vector<double> &vec5, vector<double> &vec6);
@@ -323,9 +324,11 @@ namespace SctmUtils
 		void WriteTunnelFromSubs(FDDomain *domain, VertexMapDouble &currDensCoeff, ehInfo ehinfo);
 		void WriteTunnelCoeff(FDDomain *domain, VertexMapDouble &inCurrDens, VertexMapDouble &outCurrCoeff);
 
+		//read data
 		void ReadSubsInfoFromFile(VertexMapDouble &fermiAboveMap, VertexMapDouble &channelPotMap);
 		void ReadTimestep(vector<double> &timestep, vector<double> &vg1, vector<double> &vg2, vector<double> &vg3);
 		void ReadTrappedOcc(vector<double>& eOcc, vector<double>& hOcc);
+		void ReadChargeOcc(vector<int>& chargeOcc);
 	protected:
 		double temperature;
 		string fileName;
@@ -355,12 +358,13 @@ namespace SctmUtils
 	public:
 		static SctmGlobalControl& Get();
 		SctmGlobalControl();
-		static void SetGlobalControl(string defaultParPath, string prjpath);
+		static void SetGlobalControl(string defaultParPath, string prjpath, string chargeFile);
 	public:
 		//simulation settings
 		string ProjectDirectory;
 		string UserParFile;
 		string DefaulParFile;
+		string ChargeFile;
 
 		//simulation parameters
 		string Structure; ///< the simulation structure
@@ -432,6 +436,9 @@ namespace SctmUtils
 	public:
 		enum ParName
 		{
+			temperature,
+			subs_type,
+			subs_doping,
 			// for gate stack structure
 			st_gate_voltage,
 			st_gate_workfunction,
@@ -444,10 +451,10 @@ namespace SctmUtils
 			st_oxide_grid,
 			st_oxide_material,
 
+			//preivous
 			structure,
 			coordinate,
 			solver,
-			temperature,
 			time_start,
 			time_end,
 			time_stepPerDecade,
@@ -457,8 +464,6 @@ namespace SctmUtils
 			step_write_data,
 
 			subs_radius,
-			subs_type,
-			subs_doping,
 			trap_eDensity,
 			trap_hDensity,
 			trap_density,

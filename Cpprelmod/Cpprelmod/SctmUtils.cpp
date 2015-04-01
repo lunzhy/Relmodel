@@ -880,6 +880,24 @@ namespace SctmUtils
 		return;
 	}
 
+	void SctmFileStream::ReadVector(vector<int> &vec1)
+	{
+		std::ifstream infile(this->fileName.c_str(), std::ios::in);
+		int val1 = 0;
+		double dummy = 0;
+		string title = "";
+		std::getline(infile, title);
+
+		vec1.clear();
+		while (infile >> dummy >> val1)
+		{
+			vec1.push_back(val1);
+		}
+		infile.close();
+		return;
+	}
+
+
 
 
 
@@ -1278,7 +1296,7 @@ namespace SctmUtils
 		if (!SctmTimeStep::Get().IsStepWriteData())
 			return;
 
-		fileName = directoryName + pathSep + "Potential" + pathSep + "potential" + generateFileSuffix();
+		fileName = directoryName + pathSep + "Potential" + pathSep + SctmGlobalControl::Get().ChargeFile + ".potential";
 		SctmFileStream file = SctmFileStream(fileName, SctmFileStream::Write);
 
 		Normalization norm = Normalization(this->temperature);
@@ -1314,7 +1332,7 @@ namespace SctmUtils
 		if (!SctmTimeStep::Get().IsStepWriteData())
 			return;
 
-		fileName = directoryName + pathSep + "Band" + pathSep + "band" + generateFileSuffix();
+		fileName = directoryName + pathSep + "Band" + pathSep + SctmGlobalControl::Get().ChargeFile + ".band";
 		SctmFileStream file = SctmFileStream(fileName, SctmFileStream::Write);
 
 		Normalization norm = Normalization(this->temperature);
@@ -1462,7 +1480,7 @@ namespace SctmUtils
 		if (!SctmTimeStep::Get().IsStepWriteData())
 			return;
 
-		fileName = directoryName + pathSep + "ElecField" + pathSep + "elecField" + generateFileSuffix();
+		fileName = directoryName + pathSep + "ElecField" + pathSep + SctmGlobalControl::Get().ChargeFile + ".efield";
 		SctmFileStream file = SctmFileStream(fileName, SctmFileStream::Write);
 
 		vector<double> vecX;
@@ -1670,7 +1688,7 @@ namespace SctmUtils
 			if (!SctmTimeStep::Get().IsStepWriteData())
 				return;
 
-			fileName = directoryName + pathSep + "Substrate" + pathSep + "substrate" + generateFileSuffix();
+			fileName = directoryName + pathSep + "Substrate" + pathSep + SctmGlobalControl::Get().ChargeFile + ".subs";
 			SctmFileStream subs_file = SctmFileStream(fileName, SctmFileStream::Write);
 
 			fermi_above_map = solverPack->mapSiFermiAboveCBedge;
@@ -1730,16 +1748,16 @@ namespace SctmUtils
 		SctmFileStream file = SctmFileStream(fileName, SctmFileStream::Write);
 
 		double totalTime = timer.keywordTimer["Total"];
-		double poissonTime = timer.keywordTimer["Poisson"];
-		double ddTime = timer.keywordTimer["Transport"];
+		//double poissonTime = timer.keywordTimer["Poisson"];
+		//double ddTime = timer.keywordTimer["Transport"];
 
 		string line = "";
 		line = "Total time: " + SctmConverter::DoubleToString(totalTime) + "s";
 		file.WriteLine(line);
-		line = "Poisson time: " + SctmConverter::DoubleToString(poissonTime) + "s";
-		file.WriteLine(line);
-		line = "Drift-Diffusion time: " + SctmConverter::DoubleToString(ddTime) + "s";
-		file.WriteLine(line);
+		//line = "Poisson time: " + SctmConverter::DoubleToString(poissonTime) + "s";
+		//file.WriteLine(line);
+		//line = "Drift-Diffusion time: " + SctmConverter::DoubleToString(ddTime) + "s";
+		//file.WriteLine(line);
 
 	}
 
@@ -2277,6 +2295,15 @@ namespace SctmUtils
 		trapped_file.ReadVector(vecX, vecY, vecElecTrapped, eOcc, vecHoleTrapped, hOcc);
 	}
 
+	void SctmData::ReadChargeOcc(vector<int>& chargeOcc)
+	{
+		fileName = directoryName + pathSep + SctmGlobalControl::Get().ChargeFile;
+		SctmFileStream trapped_file = SctmFileStream(fileName, SctmFileStream::Read);
+
+		trapped_file.ReadVector(chargeOcc);
+	}
+
+
 
 
 
@@ -2543,11 +2570,12 @@ namespace SctmUtils
 		Get().BlockMaterial = Mat::Parse(dynamic_cast<Param<string> *>(parBase)->Value());
 	}
 
-	void SctmGlobalControl::SetGlobalControl(string defaultParPath, string prjpath)
+	void SctmGlobalControl::SetGlobalControl(string defaultParPath, string prjpath, string chargeFile)
 	{
 		SctmGlobalControl::Get().ProjectDirectory = prjpath;
 		SctmGlobalControl::Get().DefaulParFile = defaultParPath;
 		SctmGlobalControl::Get().UserParFile = prjpath + SctmEnv::Get().PathSep + "user.param";
+		SctmGlobalControl::Get().ChargeFile = chargeFile;
 
 		setGlobalCntrl_FromParFile();
 	}
@@ -2658,6 +2686,75 @@ namespace SctmUtils
 		bool valBool = false;
 		int valInt = 0;
 
+		if (name == "st.gate.voltage")
+		{
+			valDouble = SctmConverter::StringToDouble(valStr);
+			Param<double> *par = new Param<double>(ParName::st_gate_voltage, valDouble);
+			mapToSet[ParName::st_gate_voltage] = par;
+			return;
+		}
+		if (name == "st.gate.workfunction")
+		{
+			valDouble = SctmConverter::StringToDouble(valStr);
+			Param<double> *par = new Param<double>(ParName::st_gate_workfunction, valDouble);
+			mapToSet[ParName::st_gate_workfunction] = par;
+			return;
+		}
+		if (name == "st.width.value")
+		{
+			valDouble = SctmConverter::StringToDouble(valStr);
+			Param<double> *par = new Param<double>(ParName::st_width_value, valDouble);
+			mapToSet[ParName::st_width_value] = par;
+			return;
+		}
+		if (name == "st.width.grid")
+		{
+			valInt = SctmConverter::StringToInt(valStr);
+			Param<int> *par = new Param<int>(ParName::st_width_grid, valInt);
+			mapToSet[ParName::st_width_grid] = par;
+			return;
+		}
+		if (name == "st.il.thick")
+		{
+			valDouble = SctmConverter::StringToDouble(valStr);
+			Param<double> *par = new Param<double>(ParName::st_il_thick, valDouble);
+			mapToSet[ParName::st_il_thick] = par;
+			return;
+		}
+		if (name == "st.il.grid")
+		{
+			valInt = SctmConverter::StringToInt(valStr);
+			Param<int> *par = new Param<int>(ParName::st_il_grid, valInt);
+			mapToSet[ParName::st_il_grid] = par;
+			return;
+		}
+		if (name == "st.il.material")
+		{
+			Param<string> *par = new Param<string>(ParName::st_il_material, valStr);
+			mapToSet[ParName::st_il_material] = par;
+			return;
+		}
+		if (name == "st.oxide.thick")
+		{
+			valDouble = SctmConverter::StringToDouble(valStr);
+			Param<double> *par = new Param<double>(ParName::st_oxide_thick, valDouble);
+			mapToSet[ParName::st_oxide_thick] = par;
+			return;
+		}
+		if (name == "st.oxide.grid")
+		{
+			valInt = SctmConverter::StringToInt(valStr);
+			Param<int> *par = new Param<int>(ParName::st_oxide_grid, valInt);
+			mapToSet[ParName::st_oxide_grid] = par;
+			return;
+		}
+		if (name == "st.oxide.material")
+		{
+			Param<string> *par = new Param<string>(ParName::st_oxide_material, valStr);
+			mapToSet[ParName::st_oxide_material] = par;
+			return;
+		}
+		//////////////////////////////////////////////previsous/////////////////////////////////////////////
 		if (name == "structure")
 		{
 			ParName pName = ParName::structure;

@@ -20,7 +20,7 @@ st.width.grid				: 5						# number of grids in width
 # property of interface layer
 st.il.thick					: 4						# in [nm]
 st.il.grid					: 50					# number of grids of interface layer
-sc.il.material				: SiO2					# interface layer material
+st.il.material				: SiO2					# interface layer material
 
 # property of oxide layer
 st.oxide.thick				: 6.5					# in [nm]
@@ -42,6 +42,18 @@ dielectricConstant			: 20.0
 electronAffinity			: 2.05					# in [eV]
 
 
+# parameters for using previous methods
+structure					: Single				# Single | TripleFull, cell structure
+coordinate					: Cartesian				# Cylindrical | Cartesian, the coordinate system in the simulation
+solver						: SparseLU				# SparseLU | BiCGSTAB | Pardiso, the solver for linear matrix solver
+
+# Silicon
+material					: Silicon
+bandgap						: 1.12					# in [eV]
+dielectricConstant			: 11.9
+electronAffinity			: 4.05					# in [eV]
+eDOSMass					: 1.08					# in [m0]
+hDOSMass					: 0.59					# in [m0]
 
 #################################################################################
 # Below are the default parameters file for running SimCTM
@@ -52,9 +64,7 @@ electronAffinity			: 2.05					# in [eV]
 
 ###################### paramters for simulation #################################
 # parameters for the solver
-structure					: Single				# Single | TripleFull, cell structure
-coordinate					: Cartesian				# Cylindrical | Cartesian, the coordinate system in the simulation
-solver						: SparseLU				# SparseLU | BiCGSTAB | Pardiso, the solver for linear matrix solver
+
 
 # global control of the simulation
 # temperature					: 300					# simulation temperature, in [K]
@@ -179,14 +189,14 @@ tc.block.material			: Al2O3					# a material in the material set
 ##################### material parameters ###############################
 # Silicon
 material					: Silicon
-bandgap						: 1.12					# in [eV]
-dielectricConstant			: 11.9
-electronAffinity			: 4.05					# in [eV]
+# bandgap						: 1.12					# in [eV]
+# dielectricConstant			: 11.9
+# electronAffinity			: 4.05					# in [eV]
 eMass						: 1.08					# in [m0]
-eDOSMass					: 1.08					# in [m0]
+# eDOSMass					: 1.08					# in [m0]
 eMobility					: 1350					# in [cm^2/V/s]
 hMass						: 0.59					# in [m0]
-hDOSMass					: 0.59					# in [m0]
+# hDOSMass					: 0.59					# in [m0]
 hMobility					: 450					# in [cm^2/V/s]
 
 # SiO2
