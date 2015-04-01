@@ -169,7 +169,7 @@ void GateStack::setDomainDetails()
 	ixBegin = 0; ixEnd = gridWidth;
 	iyBegin = 0; iyEnd = gridThickIl;
 	setSingleElement(indexElement, currRegion, ixBegin, ixEnd, iyBegin, iyEnd);
-	
+
 	//Oxide
 	currRegion = this->GetRegion("Trap.Oxide");
 	ixBegin = 0; ixEnd = gridWidth;

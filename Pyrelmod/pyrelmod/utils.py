@@ -23,10 +23,19 @@ def del_files(path):
 
 
 def prepare_project(prj_path):
+    if os.path.exists(prj_path):
+        print('Project exists.')
     for folder in Data_folder:
         folder_path = os.path.join(prj_path, folder)
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
+    return
+
+
+def clean_project(prj_path):
+    for folder in Data_folder:
+        folder_path = os.path.join(prj_path, folder)
+        del_files(folder_path)
     return
 
 
