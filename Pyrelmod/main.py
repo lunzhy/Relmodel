@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*- 
 __author__ = 'Lunzhy'
 import argparse
+import os
+import sys
 from pyrelmod.utils import clean_project, prepare_project
 from pyrelmod.caller import call_cpprelmod
 
 
-def do_solve(prj_path, charge_file):
-    call_cpprelmod(prj_path, charge_file)
+def do_solve(exe_path, prj_path, charge_file):
+    call_cpprelmod(exe_path, prj_path, charge_file)
     return
 
 
@@ -22,6 +24,9 @@ def do_prepare(prj_path):
 
 
 def main():
+    program_path = os.path.realpath(sys.argv[0])
+    program_path = os.path.dirname(program_path)
+
     parser = argparse.ArgumentParser(prog='relmodel')
     subparsers = parser.add_subparsers()
 
@@ -38,7 +43,7 @@ def main():
     args = parser.parse_args()
 
     if 'charge_file' in args:  # solve
-        do_solve(args.project_to_solve, args.charge_file)
+        do_solve(program_path, args.project_to_solve, args.charge_file)
     elif 'project_to_clean' in args:  # clean
         do_clean(args.project_to_clean)
     elif 'project_path' in args:

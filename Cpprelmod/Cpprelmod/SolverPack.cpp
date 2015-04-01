@@ -422,6 +422,8 @@ void GateStackSolverPack::Solve()
 	SctmMessaging::Get().PrintHeader("Start to solve");
 	domain->ReadChargeOccupation();
 
+	SctmData::Get().WriteTrapped(domain->GetDDVerts());
+
 	subsSolver->SolveSurfacePot();
 	fetchSubstrateResult();
 	SctmData::Get().WriteSubstrateResult(subsSolver, this);

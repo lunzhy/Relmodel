@@ -2248,7 +2248,7 @@ namespace SctmUtils
 		if (!SctmTimeStep::Get().IsStepWriteData())
 			return;
 
-		fileName = directoryName + pathSep + "Trap" + pathSep + "trapped" + generateFileSuffix();
+		fileName = directoryName + pathSep + "Trap" + pathSep + SctmGlobalControl::Get().ChargeFile + ".trap";
 		SctmFileStream file = SctmFileStream(fileName, SctmFileStream::Write);
 
 		vector<double> vecX;
@@ -2266,15 +2266,16 @@ namespace SctmUtils
 			vecX.push_back(norm.PullLength(currVert->X));
 			vecY.push_back(norm.PullLength(currVert->Y));
 			trappedElec.push_back(norm.PullDensity(currVert->Trap->GetTrapPrpty(TrapProperty::eTrapped)));
-			occElec.push_back(currVert->Trap->GetTrapPrpty(TrapProperty::eOccupation));
-			trappedHole.push_back(norm.PullDensity(currVert->Trap->GetTrapPrpty(TrapProperty::hTrapped)));
-			occHole.push_back(currVert->Trap->GetTrapPrpty(TrapProperty::hOccupation));
+			//occElec.push_back(currVert->Trap->GetTrapPrpty(TrapProperty::eOccupation));
+			//trappedHole.push_back(norm.PullDensity(currVert->Trap->GetTrapPrpty(TrapProperty::hTrapped)));
+			//occHole.push_back(currVert->Trap->GetTrapPrpty(TrapProperty::hOccupation));
 		}
 
 		string numStr = SctmConverter::DoubleToString(SctmTimeStep::Get().ElapsedTime());
 		string title = "";
 		title = "trapped hole information[" + numStr + "] (x, y, trapped electron density, electron occupation, trapped hole density, hole occupation)";
-		file.WriteVector(vecX, vecY, trappedElec, occElec, trappedHole, occHole, title.c_str());
+		//file.WriteVector(vecX, vecY, trappedElec, occElec, trappedHole, occHole, title.c_str());
+		file.WriteVector(vecX, vecY, trappedElec, title.c_str());
 	}
 
 	void SctmData::ReadTrappedOcc(vector<double>& eOcc, vector<double>& hOcc)
